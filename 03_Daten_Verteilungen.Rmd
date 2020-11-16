@@ -1,0 +1,72 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+
+```
+
+
+
+# Bernulli Verteilung
+
+```{r}
+set.seed(2010837870) #Random numbers generator is set to this position, so that random numbers can be reproduced later
+
+# Generate bernoulli data # bernoulli distribution in r 
+data_binom <- rbinom(n=100, size=1, prob=0.5)
+
+ggplot(data.frame(data_binom),aes(data_binom))+
+  geom_bar()+
+  ggtitle("Bernulli Distribution with 100 trys")
+
+# Plot the distribution # is it Fair/balanced? as expected?
+```
+
+
+
+# Binomial Verteilung
+
+```{r}
+# Generate binomial data
+data.binom2 <- rbinom(n=10, size=1000, p=0.8) #???
+
+# Plot the distribution
+ggplot(tibble(data.binom2), aes(data.binom2))+
+  geom_histogram(bins = 10)+
+  ggtitle("Binomal Distribution")
+
+# Assign and print probability of 8 or less successes
+prob1 <- pbinom(8,10,0.8)
+
+# Assign and print probability of all 10 successes
+prob2 <- dbinom(10,10,0.8)
+
+
+```
+
+
+# Normalverteilung
+
+```{r}
+# Generate normal data
+data_norm <- rnorm(1000, mean=0, sd=1)
+
+# Plot distribution
+ggplot(data=tibble(data_norm), aes(data_norm))+
+  geom_histogram(bins = 30)+
+  ggtitle("Normal distribution")
+
+# Compute and print true probability for greater than 2
+true_prob <- 1 - pnorm(q=2, sd=1)
+
+# Compute and print sample probability for greater than 2 (by hand) - empirical for the sample
+sample_prob <-  NULL
+
+
+```
+
+
+
