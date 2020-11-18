@@ -5,6 +5,7 @@ output: html_notebook
 
 ```{r}
 library(tidyverse)
+library(pacman)
 
 ```
 
@@ -14,6 +15,7 @@ library(tidyverse)
 
 ```{r}
 set.seed(2010837870) #Random numbers generator is set to this position, so that random numbers can be reproduced later
+#seed is set for this Chunk only!
 
 # Generate bernoulli data # bernoulli distribution in r 
 data_binom <- rbinom(n=100, size=1, prob=0.5)
@@ -31,11 +33,11 @@ ggplot(data.frame(data_binom),aes(data_binom))+
 
 ```{r}
 # Generate binomial data
-data.binom2 <- rbinom(n=10, size=1000, p=0.8) #???
+data.binom2 <- rbinom(n=1000, size=1, p=0.8) 
 
 # Plot the distribution
 ggplot(tibble(data.binom2), aes(data.binom2))+
-  geom_histogram(bins = 10)+
+  geom_bar() #geom_histogram(bins=3)+
   ggtitle("Binomal Distribution")
 
 # Assign and print probability of 8 or less successes
@@ -44,7 +46,6 @@ prob1 <- pbinom(8,10,0.8)
 # Assign and print probability of all 10 successes
 prob2 <- dbinom(10,10,0.8)
 
-
 ```
 
 
@@ -52,7 +53,8 @@ prob2 <- dbinom(10,10,0.8)
 
 ```{r}
 # Generate normal data
-data_norm <- rnorm(1000, mean=0, sd=1)
+mean
+data_norm <- rnorm(1000, mean=2, sd=10)
 
 # Plot distribution
 ggplot(data=tibble(data_norm), aes(data_norm))+
@@ -63,10 +65,130 @@ ggplot(data=tibble(data_norm), aes(data_norm))+
 true_prob <- 1 - pnorm(q=2, sd=1)
 
 # Compute and print sample probability for greater than 2 (by hand) - empirical for the sample
-sample_prob <-  NULL
-
+sample_prob <-  NULL #ToDo
 
 ```
+#Aufgabe 4: Konfidenzintervall von Hand
+
+Berechnen Sie den Standardfehler und die Fehlerquote mit Hilfe der std.error-Funktion und der für Sie definierten Variablen z_score.
+Berechnen und drucken Sie die untere Grenze unseres Vertrauensintervalls.
+Berechnen und drucken Sie die obere Grenze unseres Vertrauensintervalls.
+
+
+```{r}
+library(boot)
+library(plotrix)
+z_score <- 2.7764451051977987
+nums <- c(1, 2, 3, 4, 5)
+confidence <- 0.95
+
+# Berechnen Sie den Standardfehler und die Fehlerquote.
+std_err <- std.error(nums) # = sd(nums)/sqrt(length(nums))
+margin_error <- std_err/sqrt(length(nums))  #(s/wurzel(n)) --> =sd(nums)/length(nums)
+
+# Berechnen und ausgeben des unteren Schwellenwerts
+lower <- z_score - margin_error #(1-confidence)/2
+# Berechnen und ausgeben des oberen Schwellenwerts
+upper <- z_score + margin_error
+
+#ToDo: Wo confidence - Einfluss??
+```
+
+
+#Aufgabe 5: Anwenden von Konfidenzintervallen
+
+```{r}
+
+heads <- sum(rbinom(50,1,0.5))
+print(heads)
+
+confidence_int <- prop.test(heads, 50, p=0.5, conf.level = 0.99) # 99% conf
+confidence_int.9 <- prop.test(heads, 50, p=0.5, conf.level = 0.9)  # 90% Conf
+confidence_int
+confidence_int.9
+# repeat 10 times
+
+for(i in 1:10) {
+  heads <- (sum(rbinom(50,1,0.5)))
+  print(prop.test(heads, 50, p=0.5, conf.level = 0.9)$conf.int)
+}
+  
+# check results
+```
+
+
+
+#Aufgabe 6: Samples eines Würfelwurfs
+
+```{r}
+# Create a sample of 10 dice rolls
+small <- sample(6,10,replace=TRUE)
+
+# Calculate and print the mean of the sample
+small_mean <- mean(small)
+small_mean
+
+# Create a sample of 1000 die rolls
+large <-  sample(6,1000,replace=TRUE)
+
+# Calculate and print the mean of the large sample
+large_mean  <-  mean(large)
+large_mean
+
+#ToDo - welcher Satz ist hier am Werk?
+```
+```{python}
+import numpy as np
+array = np.array()
+for i in range(1000):
+  array.append(2)
+
+```
+
+
+
+# Aufgabe 7: Simulation des Central Limit Theorem
+```{r}
+
+# Create a vector of 1000 sample means of size 30
+means <- sample(6,30,replace=TRUE)
+# Create and show a histogram of the means
+# Adapt code for 100 samples of size 30
+means_100 <- NULL
+# Create and show a histogram of the means
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Bootstrap Fun
+
+```{r}
+#Bruce:
+#1. Draw a random sample of size n with replacement from the data (a resample).
+#2. Record the statistic of interest for the resample.
+#3. Repeat steps 1–2 many (R) times.
+#4. For an x% confidence interval, trim [(1 – [x/100]) / 2]% of the R resample results from either end of the distribution.
+#5. The trim points are the endpoints of an x% bootstrap confidence interval
+
+nums <- c(1, 2, 3, 4, 5) 
+
+samples <-  sample(nums,20,replace=TRUE)
+stat_fun <- function(x, idx) mean(x[idx])
+boot_obj <- boot(samples, R=20, stat_fun)
+b <- boot.ci(boot_obj, type=c("norm","basic"))
+
+```
+
 
 
 
