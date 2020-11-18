@@ -10,8 +10,7 @@ library(pacman)
 ```
 
 
-
-# Bernulli Verteilung
+# 1 Bernulli Verteilung
 
 ```{r}
 set.seed(2010837870) #Random numbers generator is set to this position, so that random numbers can be reproduced later
@@ -28,8 +27,7 @@ ggplot(data.frame(data_binom),aes(data_binom))+
 ```
 
 
-
-# Binomial Verteilung
+# 2 Binomial Verteilung
 
 ```{r}
 # Generate binomial data
@@ -49,7 +47,7 @@ prob2 <- dbinom(10,10,0.8)
 ```
 
 
-# Normalverteilung
+# 3 Normalverteilung
 
 ```{r}
 # Generate normal data
@@ -68,12 +66,9 @@ true_prob <- 1 - pnorm(q=2, sd=1)
 sample_prob <-  NULL #ToDo
 
 ```
+
+
 #Aufgabe 4: Konfidenzintervall von Hand
-
-Berechnen Sie den Standardfehler und die Fehlerquote mit Hilfe der std.error-Funktion und der für Sie definierten Variablen z_score.
-Berechnen und drucken Sie die untere Grenze unseres Vertrauensintervalls.
-Berechnen und drucken Sie die obere Grenze unseres Vertrauensintervalls.
-
 
 ```{r}
 library(boot)
@@ -84,18 +79,20 @@ confidence <- 0.95
 
 # Berechnen Sie den Standardfehler und die Fehlerquote.
 std_err <- std.error(nums) # = sd(nums)/sqrt(length(nums))
-margin_error <- std_err/sqrt(length(nums))  #(s/wurzel(n)) --> =sd(nums)/length(nums)
+margin_error <- pnorm(0.975)*std_err  
 
 # Berechnen und ausgeben des unteren Schwellenwerts
-lower <- z_score - margin_error #(1-confidence)/2
+lower <- z_score - margin_error 
+lower
+
 # Berechnen und ausgeben des oberen Schwellenwerts
 upper <- z_score + margin_error
+upper
 
-#ToDo: Wo confidence - Einfluss??
 ```
 
 
-#Aufgabe 5: Anwenden von Konfidenzintervallen
+# 5 Anwenden von Konfidenzintervallen
 
 ```{r}
 
@@ -118,7 +115,7 @@ for(i in 1:10) {
 
 
 
-#Aufgabe 6: Samples eines Würfelwurfs
+# 6 Samples eines Würfelwurfs
 
 ```{r}
 # Create a sample of 10 dice rolls
@@ -135,58 +132,45 @@ large <-  sample(6,1000,replace=TRUE)
 large_mean  <-  mean(large)
 large_mean
 
-#ToDo - welcher Satz ist hier am Werk?
+#Central Limit Theorem
+#This phenomenon is termed the central limit theorem. It says that the means
+#drawn from multiple samples will resemble the familiar bell-shaped normal
+#curve (see “Normal Distribution”), even if the source population is not normally
+#distributed, provided that the sample size is large enough and the departure of
+#the data from normality is not too great
+#Source: Bruce
 ```
 ```{python}
 import numpy as np
 array = np.array()
-for i in range(1000):
-  array.append(2)
 
 ```
 
 
 
-# Aufgabe 7: Simulation des Central Limit Theorem
+# 7 Simulation des Central Limit Theorem
+
 ```{r}
 
 # Create a vector of 1000 sample means of size 30
-means <- sample(6,30,replace=TRUE)
-# Create and show a histogram of the means
-# Adapt code for 100 samples of size 30
-means_100 <- NULL
-# Create and show a histogram of the means
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-# Bootstrap Fun
-
-```{r}
-#Bruce:
-#1. Draw a random sample of size n with replacement from the data (a resample).
-#2. Record the statistic of interest for the resample.
-#3. Repeat steps 1–2 many (R) times.
-#4. For an x% confidence interval, trim [(1 – [x/100]) / 2]% of the R resample results from either end of the distribution.
-#5. The trim points are the endpoints of an x% bootstrap confidence interval
-
-nums <- c(1, 2, 3, 4, 5) 
-
-samples <-  sample(nums,20,replace=TRUE)
+samples <- sample(1:6,30,replace=TRUE)
 stat_fun <- function(x, idx) mean(x[idx])
-boot_obj <- boot(samples, R=20, stat_fun)
-b <- boot.ci(boot_obj, type=c("norm","basic"))
+means <- boot(samples, R = 1000, stat_fun)
 
+# Create and show a histogram of the means
+ggplot(data.frame(means$t), aes(means$t))+
+  geom_histogram() +
+  ggtitle("Means of 1000 samples with size 30")
+
+# Adapt code for 100 samples of size 30
+means_100 <-  boot(samples, R = 1000, stat_fun)
+
+# Create and show a histogram of the means
+ggplot(data.frame(means_100$t), aes(means_100$t))+
+  geom_histogram() +
+  ggtitle("Means of 100 samples with size 30")
+
+#Source: Foliensatz ILV (oder Video)
 ```
 
 
