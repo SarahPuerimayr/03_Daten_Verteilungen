@@ -20,7 +20,7 @@ set.seed(2010837870) #Random numbers generator is set to this position, so that 
 data_binom <- rbinom(n=100, size=1, prob=0.5)
 
 ggplot(data.frame(data_binom),aes(data_binom))+
-  geom_bar()+
+  geom_histogram(bins=3)+
   ggtitle("Bernulli Distribution with 100 trys")
 
 # Plot the distribution # is it Fair/balanced? as expected?
@@ -40,9 +40,11 @@ ggplot(tibble(data.binom2), aes(data.binom2))+
 
 # Assign and print probability of 8 or less successes
 prob1 <- pbinom(8,10,0.8)
+prob1
 
 # Assign and print probability of all 10 successes
 prob2 <- dbinom(10,10,0.8)
+prob2
 
 ```
 
@@ -51,8 +53,7 @@ prob2 <- dbinom(10,10,0.8)
 
 ```{r}
 # Generate normal data
-mean
-data_norm <- rnorm(1000, mean=2, sd=10)
+data_norm <- rnorm(1000, mean=0, sd=1)
 
 # Plot distribution
 ggplot(data=tibble(data_norm), aes(data_norm))+
@@ -61,9 +62,11 @@ ggplot(data=tibble(data_norm), aes(data_norm))+
 
 # Compute and print true probability for greater than 2
 true_prob <- 1 - pnorm(q=2, sd=1)
+true_prob
 
 # Compute and print sample probability for greater than 2 (by hand) - empirical for the sample
-sample_prob <-  NULL #ToDo
+sample_prob <- sum(data_norm>2)/1000
+sample_prob
 
 ```
 
@@ -73,20 +76,25 @@ sample_prob <-  NULL #ToDo
 ```{r}
 library(boot)
 library(plotrix)
-z_score <- 2.7764451051977987
+z_score <- 2.7764451051977987 #What to do with this? 
 nums <- c(1, 2, 3, 4, 5)
 confidence <- 0.95
+sample_mean <- mean(nums) #NOT GIVEN, although in task!
 
 # Berechnen Sie den Standardfehler und die Fehlerquote.
-std_err <- std.error(nums) # = sd(nums)/sqrt(length(nums))
+std_err <- sd(nums)/sqrt(length(nums)) #std.error(nums)
+std_err
+
 margin_error <- pnorm(0.975)*std_err  
+margin_error
+#pnorm berechnet Z-Score mit 1.96
 
 # Berechnen und ausgeben des unteren Schwellenwerts
-lower <- z_score - margin_error 
+lower <- sample_mean -  margin_error 
 lower
 
 # Berechnen und ausgeben des oberen Schwellenwerts
-upper <- z_score + margin_error
+upper <- sample_mean +  margin_error
 upper
 
 ```
@@ -103,13 +111,14 @@ confidence_int <- prop.test(heads, 50, p=0.5, conf.level = 0.99) # 99% conf
 confidence_int.9 <- prop.test(heads, 50, p=0.5, conf.level = 0.9)  # 90% Conf
 confidence_int
 confidence_int.9
+
 # repeat 10 times
 
 for(i in 1:10) {
   heads <- (sum(rbinom(50,1,0.5)))
   print(prop.test(heads, 50, p=0.5, conf.level = 0.9)$conf.int)
 }
-  
+
 # check results
 ```
 
@@ -163,7 +172,7 @@ ggplot(data.frame(means$t), aes(means$t))+
   ggtitle("Means of 1000 samples with size 30")
 
 # Adapt code for 100 samples of size 30
-means_100 <-  boot(samples, R = 1000, stat_fun)
+means_100 <-  boot(samples, R = 100, stat_fun)
 
 # Create and show a histogram of the means
 ggplot(data.frame(means_100$t), aes(means_100$t))+
